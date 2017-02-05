@@ -1,8 +1,20 @@
 import random
 import itertools
+import requests
 
 class Scramble:
+
+
     def __init__(self):
+        """ Initializes the game class
+
+        Attributes:
+            _points: User's points
+            _solution: All the possible word user can make
+            _letters: Given letters users can work with
+            _answers: List of correct words
+            _score: users's score
+        """
         self._points = 0
         self._solution = []
         self._letters = []
@@ -10,13 +22,15 @@ class Scramble:
         self._score = 0
 
     def generate(self):
+        """ Function that generates the game  """
 
         # read all 5 letter words from textfile and randomly selects one
         f = open("fiveletterwords.txt", 'r')
         list_of_words = f.read().splitlines()
         f.close()
 
-        word = list_of_words[random.randint(0,len(list_of_words))]
+        # Randomly selects a word
+        word = list_of_words[random.randint(0, len(list_of_words))]
 
         letters = list(word)  # separate word into array of characters
 
@@ -27,9 +41,10 @@ class Scramble:
             letters[i] = letters[randomPosition]
             letters[randomPosition] = temp
 
-        self._letters = letters
+        self._letters = letters    # save the possible letters into the attributes
 
     def update_points(self, answer):
+        """ Function that checks if user enters a valid word"""
         points = 0
         letters = list(answer)
 
@@ -53,6 +68,9 @@ class Scramble:
                     points += 10
         return points
 
+    def get_letters(self):
+        return self._letters
+
     def get_points(self):
         return self._points
 
@@ -60,6 +78,7 @@ class Scramble:
         self._points = points
 
     def create_solution(self):
+        """ Generates all possible words and puts it in an array"""
         word = "water"
         combinations = []
         solution = []
@@ -81,6 +100,7 @@ class Scramble:
         return solution
 
     def evaluate_score(self):
+        """ Called when gamee is done to tell user the score"""
         maxPoints = 0
         solution = self.create_solution()
         for i in range(len(solution)):
@@ -88,8 +108,24 @@ class Scramble:
 
         return self._points / maxPoints * 100
 
-    def is_word(word):
-        return True
+    def is_word(self, answer):
+        """ API call to dictionaey to see if word exists"""
+        if not isinstance(answer, str):
+            print('{} is not type a string')
+            return False
+
+        dict_api_url = 'https://wordsapiv1.p.mashape.com/words/' + str(answer)
+
+        headers = {
+            "X-Mashape-Key": "hgcPlTTMlRmshD1vW3RDL8QfM1Dsp1tkFhRjsnbwU0Vjq9xR9I",
+            "Accept": "application/json"
+        }
+        req = requests.get(dict_api_url, headers=headers)
+
+        if req.status_code == 200:
+            return True
+        else:
+            return False
 
     def store_answer(self, answer):
         answerLetters = list(answer)
@@ -106,4 +142,4 @@ class Scramble:
 
             if check:
                 self._answer.append(answer)
-
+        return check
