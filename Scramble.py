@@ -11,7 +11,12 @@ class Scramble:
 
     def generate(self):
 
-        with open("fiveletterwords.txt")
+        # read all 5 letter words from textfile and randomly selects one
+        f = open("fiveletterwords.txt", 'r')
+        list_of_words = f.read().splitlines()
+        f.close()
+
+        word = list_of_words[random.randint(0,len(list_of_words))]
 
         letters = list(word)  # separate word into array of characters
 
@@ -22,7 +27,7 @@ class Scramble:
             letters[i] = letters[randomPosition]
             letters[randomPosition] = temp
 
-        self.__letters = letters
+        self._letters = letters
 
     def update_points(self, answer):
         points = 0
@@ -101,3 +106,4 @@ class Scramble:
 
             if check:
                 self._answer.append(answer)
+
